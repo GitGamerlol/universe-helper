@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Super Stickman Golf | Fixed</title>
+
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+
+  <!-- GLOBAL ASSET BASE -->
+  <script>
+    window.ASSET_BASE =
+      "https://raw.githubusercontent.com/EthanDupe/HTML-Games-v3/refs/heads/main/stickman-golf/";
+  </script>
+
+  <!-- PATCH ALL ASSET LOADING -->
+  <script>
+    (function () {
+      const base = window.ASSET_BASE;
+
+      // Patch Image
+      const OriginalImage = window.Image;
+      window.Image = function () {
+        const img = new OriginalImage();
+        Object.defineProperty(img, "src", {
+          set(v) {
+            if (v && !v.startsWith("http")) v = base + v;
+            return img.setAttribute("src", v);
+          },
+          get() {
+            return img.getAttribute("src");
+          }
+        });
+        return img;
+      };
+
+      // Patch Audio
+      const AudioOrig = window.Audio;
+      window.Audio = function (src) {
+        if (src && !src.startsWith("http")) {
+          src = base + src;
+        }
+        return new AudioOrig(src);
+      };
+
+      // Patch fetch (if used)
+      const oldFetch = window.fetch;
+      window.fetch = function (url, opts) {
+        if (typeof url === "string" && !url.startsWith("http")) {
+          url = base + url;
+        }
+        return oldFetch(url, opts);
+      };
+    })();
+  </script>
+
+  <!-- jQuery (required by game.js) -->
+  <script src="https://code.jquery.com/jquery-1.7.2.min.js"></script>
+
+  <!-- GAME -->
+  <script src="game.js"></script>
+  
+  
+
+  <style>
+    html,body{
+      background:#000;
+      margin:0;
+      padding:0;
+      width:100%;
+      height:100%;
+      font-family:"FredokaOne";
+    }
+
+    #game { position:absolute; left:0; top:0; }
+
+    #canvas{
+      position:absolute;
+      width:100%;
+      height:100%;
+    }
+
+    #orientate, .play {
+      position:absolute;
+      width:100%;
+      height:100%;
+      display:none;
+    }
+
+    @font-face{
+      font-family:'FredokaOne';
+      src:url('https://raw.githubusercontent.com/EthanDupe/HTML-Games-v3/refs/heads/main/stickman-golf/media/font/FredokaOne-Regular.ttf')
+      format('truetype');
+    }
+  </style>
+</head>
+
+<body>
+  <div id="game">
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <div id="orientate"></div>
+
+  <div class="play"></div>
+</body>
+</html>
